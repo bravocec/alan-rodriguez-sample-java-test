@@ -22,6 +22,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import org.slf4j.Logger;
@@ -221,9 +222,15 @@ public class TransactionBusinessImpl implements TransactionBusiness {
     }
 
     @Override
-    public TransactionDTO getRandomSingleTransaction(TransactionDTO param) {
-
-        return null;
+    public TransactionDTO getRandomSingleTransaction() {
+        TransactionDTO transactionDTO = null;
+        List<TransactionEntity> transactionEntity = this.transactionRepository.findAll();
+        if(!transactionEntity.isEmpty()){
+            Integer randomIndex = ThreadLocalRandom.current().nextInt(0, transactionEntity.size());
+            this.log.info("Random index {} ",randomIndex);
+            transactionDTO = TransactionMapper.transactionDTOToEntity(transactionEntity.get(randomIndex));
+        }
+        return transactionDTO;
     }
 
 }

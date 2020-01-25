@@ -71,7 +71,9 @@ public class TransactionOperationsController {
     
     @GetMapping("/randomTransaction")
     public ResponseEntity<Response<TransactionDTO>> random() {
-        return null;
+        TransactionDTO responseDTO = this.transactionBusiness.getRandomSingleTransaction();
+        Response<TransactionDTO> response = new Response<>(responseDTO);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatus()));
     }
 
 }

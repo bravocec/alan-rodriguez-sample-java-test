@@ -25,6 +25,6 @@ public interface TransactionBusiness {
     
     List<TransactionReportDTO> showTransactionReporteService(TransactionDTO param);
     
-    TransactionDTO getRandomSingleTransaction(TransactionDTO param);
+    TransactionDTO getRandomSingleTransaction();
     
 }
