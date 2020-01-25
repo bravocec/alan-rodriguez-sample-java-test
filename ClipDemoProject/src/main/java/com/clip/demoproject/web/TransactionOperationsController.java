@@ -8,6 +8,7 @@ package com.clip.demoproject.web;
 import com.clip.demoproject.business.TransactionBusiness;
 import com.clip.demoproject.config.Response;
 import com.clip.demoproject.dto.TransactionDTO;
+import com.clip.demoproject.dto.TransactionReportDTO;
 import java.util.List;
 import java.util.Map;
 import org.slf4j.Logger;
@@ -62,8 +63,10 @@ public class TransactionOperationsController {
     }
 
     @GetMapping("/report")
-    public ResponseEntity<Response<List<TransactionDTO>>> report(@RequestParam("user_id")Integer userId) {
-        return null;
+    public ResponseEntity<Response<List<TransactionReportDTO>>> report(@RequestParam("user_id")Integer userId) {
+        List<TransactionReportDTO> responseListDTO = this.transactionBusiness.showTransactionReporteService(new TransactionDTO().addUser_id(userId));
+        Response<List<TransactionReportDTO>> response = new Response<>(responseListDTO);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatus()));
     }
     
     @GetMapping("/randomTransaction")

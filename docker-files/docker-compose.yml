@@ -1,0 +1,13 @@
+version: '3.7'
+services: 
+    mongodb:
+        image: mongo:4.2.2
+        container_name: 'MongoDBTransactions'
+        environment:
+            MONGO_INITDB_ROOT_USERNAME: admin
+            MONGO_INITDB_ROOT_PASSWORD: admin
+            MONGO_INITDB_DATABASE: transactions
+        volumes:
+            - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+        ports:
+            - '27017-27019:27017-27019'

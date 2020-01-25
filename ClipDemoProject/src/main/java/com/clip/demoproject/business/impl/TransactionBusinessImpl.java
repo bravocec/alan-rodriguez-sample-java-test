@@ -109,14 +109,23 @@ public class TransactionBusinessImpl implements TransactionBusiness {
         for (TransactionEntity transactionEntity : sortedTransactions) {
             if(!existWeekOnTheReport(report, transactionEntity)){
                 report.add(getFirstRowOfTheWeek(transactionEntity, totalAmount));
+                totalAmount = report.stream().map(element -> element.getAmount()).reduce(totalAmount, Double::sum);
             }else{
-                
+                addAmountAndQuantityToCurrent(report, transactionEntity);
             }
         }
         return report;
     }
     
-    
+    private void addAmountAndQuantityToCurrent(List<TransactionReportDTO> report,TransactionEntity transactionEntity){
+        LocalDate localDate = LocalDate.parse(transactionEntity.getDate());
+        report.stream().filter(elementReport -> {
+            return localDate.compareTo(elementReport.getStart()) >= 0 && localDate.compareTo(elementReport.getFinish()) <= 0;
+        }).findFirst().ifPresent(rowReport -> {
+            rowReport.setAmount(rowReport.getAmount() + transactionEntity.getAmount());
+            rowReport.setQuantity(rowReport.getQuantity() + 1);
+        });
+    }
     
     private Boolean existWeekOnTheReport(List<TransactionReportDTO> report,TransactionEntity transactionEntity){
         return report.stream().anyMatch(reportElement -> {
@@ -132,7 +141,6 @@ public class TransactionBusinessImpl implements TransactionBusiness {
         transactionReportDTO.setAmount(transactionEntity.getAmount());
         transactionReportDTO.setQuantity(oneElement);
         transactionReportDTO.setTotalamount(totalAmount);
-        totalAmount += transactionReportDTO.getAmount();
         buildStarAndFinish(transactionEntity.getDate(), transactionReportDTO,Boolean.TRUE);
         transactionReportDTO.setWeekStart(transactionReportDTO.getStart().format(DateTimeFormatter.ofPattern(this.datePattern.concat(" EEEE"))));
         transactionReportDTO.setWeekFinish(transactionReportDTO.getFinish().format(DateTimeFormatter.ofPattern(this.datePattern.concat(" EEEE"))));
