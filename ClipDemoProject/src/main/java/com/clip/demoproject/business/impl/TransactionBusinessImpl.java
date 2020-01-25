@@ -107,11 +107,12 @@ public class TransactionBusinessImpl implements TransactionBusiness {
         Double totalAmount = 0.0;
         for (TransactionEntity transactionEntity : sortedTransactions) {
             if (!existWeekOnTheReport(report, transactionEntity)) {
+                this.log.info("The date {} was not found it on the array, init a new row",transactionEntity.getDate());
                 report.add(getFirstRowOfTheWeek(transactionEntity, totalAmount));
-                totalAmount = report.stream().map(element -> element.getAmount()).reduce(totalAmount, Double::sum);
             } else {
                 addAmountAndQuantityToCurrent(report, transactionEntity);
             }
+            totalAmount += transactionEntity.getAmount();
         }
         return report;
     }
@@ -127,6 +128,7 @@ public class TransactionBusinessImpl implements TransactionBusiness {
     }
 
     private Boolean existWeekOnTheReport(List<TransactionReportDTO> report, TransactionEntity transactionEntity) {
+        this.log.info("Searching {} on the report list ",transactionEntity.getDate());
         return report.stream().anyMatch(reportElement -> {
             return LocalDate.parse(transactionEntity.getDate()).compareTo(reportElement.getStart()) >= 0
                     && LocalDate.parse(transactionEntity.getDate()).compareTo(reportElement.getFinish()) <= 0;
@@ -172,7 +174,7 @@ public class TransactionBusinessImpl implements TransactionBusiness {
                 case FRIDAY:
                     transactionReportDTO.setStart(currentLocalDate);
                     if (transactionReportDTO.getFinish() == null) {
-                        transactionReportDTO.setPreCurrentLocalDate(transactionReportDTO.getCurrentLocalDate());
+                        transactionReportDTO.setPreCurrentLocalDate(currentLocalDate);
                         transactionReportDTO.setCurrentLocalDate(currentLocalDate.plusDays(this.daysToAddOrSubstract));
                         buildStarAndFinish(null, transactionReportDTO, Boolean.TRUE);
                     }
@@ -180,18 +182,18 @@ public class TransactionBusinessImpl implements TransactionBusiness {
                 case THURSDAY:
                     transactionReportDTO.setFinish(currentLocalDate);
                     if (transactionReportDTO.getStart() == null) {
-                        transactionReportDTO.setPreCurrentLocalDate(transactionReportDTO.getCurrentLocalDate());
+                        transactionReportDTO.setPreCurrentLocalDate(currentLocalDate);
                         transactionReportDTO.setCurrentLocalDate(currentLocalDate.minusDays(this.daysToAddOrSubstract));
                         buildStarAndFinish(null, transactionReportDTO, Boolean.FALSE);
                     }
                     break;
                 default:
                     if (isSumOperation) {
-                        transactionReportDTO.setPreCurrentLocalDate(transactionReportDTO.getCurrentLocalDate());
+                        transactionReportDTO.setPreCurrentLocalDate(currentLocalDate);
                         transactionReportDTO.setCurrentLocalDate(currentLocalDate.plusDays(this.daysToAddOrSubstract));
                         buildStarAndFinish(null, transactionReportDTO, Boolean.TRUE);
                     } else {
-                        transactionReportDTO.setPreCurrentLocalDate(transactionReportDTO.getCurrentLocalDate());
+                        transactionReportDTO.setPreCurrentLocalDate(currentLocalDate);
                         transactionReportDTO.setCurrentLocalDate(currentLocalDate.minusDays(this.daysToAddOrSubstract));
                         buildStarAndFinish(null, transactionReportDTO, Boolean.FALSE);
                     }
