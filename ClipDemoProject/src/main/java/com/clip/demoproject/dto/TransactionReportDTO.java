@@ -13,7 +13,7 @@ import java.util.Objects;
  *
  * @author Alan Rodriguez
  */
-@JsonIgnoreProperties({ "start", "finish", "currentLocalDate" })
+@JsonIgnoreProperties({ "start", "finish", "preCurrentLocalDate", "currentLocalDate", "isTheEndOfTheReport" })
 public class TransactionReportDTO {
     
     private Integer id;
@@ -24,7 +24,26 @@ public class TransactionReportDTO {
     private Integer quantity;
     private Double amount;
     private Double totalamount;
+    private LocalDate preCurrentLocalDate;
     private LocalDate currentLocalDate;
+    private Boolean isTheEndOfTheReport = Boolean.FALSE;
+
+    public LocalDate getPreCurrentLocalDate() {
+        return preCurrentLocalDate;
+    }
+
+    public void setPreCurrentLocalDate(LocalDate preCurrentLocalDate) {
+        this.preCurrentLocalDate = preCurrentLocalDate;
+    }
+    
+    public Boolean getIsTheEndOfTheReport() {
+        return isTheEndOfTheReport;
+    }
+
+    public void setIsTheEndOfTheReport(Boolean isTheEndOfTheReport) {
+        this.isTheEndOfTheReport = isTheEndOfTheReport;
+    }
+    
 
     public LocalDate getCurrentLocalDate() {
         return currentLocalDate;

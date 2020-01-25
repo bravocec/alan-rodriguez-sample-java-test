@@ -37,16 +37,15 @@ import org.springframework.stereotype.Service;
 public class TransactionBusinessImpl implements TransactionBusiness {
 
     private Logger log = LoggerFactory.getLogger(TransactionBusinessImpl.class);
-    
+
     private final Long daysToAddOrSubstract = 1L;
-    
+
     private final String datePattern = "yyyy-MM-dd";
 
     private DateFormat dateFormat;
-    
-    
+
     @PostConstruct
-    public void init(){
+    public void init() {
         this.dateFormat = new SimpleDateFormat(datePattern);
     }
 
@@ -102,22 +101,22 @@ public class TransactionBusinessImpl implements TransactionBusiness {
         List<TransactionEntity> sortedTransactions = getSortedTransactions(allTransactions);
         return buildTransactionReport(sortedTransactions);
     }
-    
+
     private List<TransactionReportDTO> buildTransactionReport(List<TransactionEntity> sortedTransactions) {
         List<TransactionReportDTO> report = new LinkedList<>();
         Double totalAmount = 0.0;
         for (TransactionEntity transactionEntity : sortedTransactions) {
-            if(!existWeekOnTheReport(report, transactionEntity)){
+            if (!existWeekOnTheReport(report, transactionEntity)) {
                 report.add(getFirstRowOfTheWeek(transactionEntity, totalAmount));
                 totalAmount = report.stream().map(element -> element.getAmount()).reduce(totalAmount, Double::sum);
-            }else{
+            } else {
                 addAmountAndQuantityToCurrent(report, transactionEntity);
             }
         }
         return report;
     }
-    
-    private void addAmountAndQuantityToCurrent(List<TransactionReportDTO> report,TransactionEntity transactionEntity){
+
+    private void addAmountAndQuantityToCurrent(List<TransactionReportDTO> report, TransactionEntity transactionEntity) {
         LocalDate localDate = LocalDate.parse(transactionEntity.getDate());
         report.stream().filter(elementReport -> {
             return localDate.compareTo(elementReport.getStart()) >= 0 && localDate.compareTo(elementReport.getFinish()) <= 0;
@@ -126,53 +125,78 @@ public class TransactionBusinessImpl implements TransactionBusiness {
             rowReport.setQuantity(rowReport.getQuantity() + 1);
         });
     }
-    
-    private Boolean existWeekOnTheReport(List<TransactionReportDTO> report,TransactionEntity transactionEntity){
+
+    private Boolean existWeekOnTheReport(List<TransactionReportDTO> report, TransactionEntity transactionEntity) {
         return report.stream().anyMatch(reportElement -> {
-            return LocalDate.parse(transactionEntity.getDate()).compareTo(reportElement.getStart()) >= 0 && 
-                    LocalDate.parse(transactionEntity.getDate()).compareTo(reportElement.getFinish()) <= 0;
+            return LocalDate.parse(transactionEntity.getDate()).compareTo(reportElement.getStart()) >= 0
+                    && LocalDate.parse(transactionEntity.getDate()).compareTo(reportElement.getFinish()) <= 0;
         });
     }
-    
-    private TransactionReportDTO getFirstRowOfTheWeek(TransactionEntity transactionEntity,Double totalAmount){
-        Integer oneElement = 1; 
+
+    private TransactionReportDTO getFirstRowOfTheWeek(TransactionEntity transactionEntity, Double totalAmount) {
+        Integer oneElement = 1;
         TransactionReportDTO transactionReportDTO = new TransactionReportDTO();
         transactionReportDTO.setId(transactionEntity.getUserId());
         transactionReportDTO.setAmount(transactionEntity.getAmount());
         transactionReportDTO.setQuantity(oneElement);
         transactionReportDTO.setTotalamount(totalAmount);
-        buildStarAndFinish(transactionEntity.getDate(), transactionReportDTO,Boolean.TRUE);
+        buildStarAndFinish(transactionEntity.getDate(), transactionReportDTO, Boolean.TRUE);
         transactionReportDTO.setWeekStart(transactionReportDTO.getStart().format(DateTimeFormatter.ofPattern(this.datePattern.concat(" EEEE"))));
         transactionReportDTO.setWeekFinish(transactionReportDTO.getFinish().format(DateTimeFormatter.ofPattern(this.datePattern.concat(" EEEE"))));
         return transactionReportDTO;
     }
-    
-    private void buildStarAndFinish(String transactionDate,TransactionReportDTO transactionReportDTO,Boolean isSumOperation){
+
+    private void validateIfRowReportCanFinishWell(TransactionReportDTO transactionReportDTO, Boolean isSumOperation) {
+        if (transactionReportDTO.getCurrentLocalDate() == null || transactionReportDTO.getPreCurrentLocalDate() == null) {
+            return;
+        }
+        if (!transactionReportDTO.getPreCurrentLocalDate().getMonth().equals(transactionReportDTO.getCurrentLocalDate().getMonth())) {
+            LocalDate localDateToBeSet = isSumOperation ? transactionReportDTO.getCurrentLocalDate().minusDays(this.daysToAddOrSubstract) : transactionReportDTO.getCurrentLocalDate().plusDays(this.daysToAddOrSubstract);
+            if (transactionReportDTO.getStart() != null) {
+                transactionReportDTO.setFinish(localDateToBeSet);
+                transactionReportDTO.setIsTheEndOfTheReport(Boolean.TRUE);
+            } else if (transactionReportDTO.getFinish() != null) {
+                transactionReportDTO.setStart(localDateToBeSet);
+                transactionReportDTO.setIsTheEndOfTheReport(Boolean.TRUE);
+            } else {
+                throw new RuntimeException("The current repor algorithum doesn't support this feature");
+            }
+        }
+    }
+
+    private void buildStarAndFinish(String transactionDate, TransactionReportDTO transactionReportDTO, Boolean isSumOperation) {
         LocalDate currentLocalDate = transactionDate != null ? LocalDate.parse(transactionDate) : transactionReportDTO.getCurrentLocalDate();
-        switch (currentLocalDate.getDayOfWeek()) {
-            case FRIDAY:
-                transactionReportDTO.setStart(currentLocalDate);
-                if(transactionReportDTO.getFinish() == null){
-                    transactionReportDTO.setCurrentLocalDate(currentLocalDate.plusDays(this.daysToAddOrSubstract));
-                    buildStarAndFinish(null, transactionReportDTO,Boolean.TRUE);
-                }
-                break;
-            case THURSDAY:
-                transactionReportDTO.setFinish(currentLocalDate);
-                if(transactionReportDTO.getStart() == null){
-                    transactionReportDTO.setCurrentLocalDate(currentLocalDate.minusDays(this.daysToAddOrSubstract));
-                    buildStarAndFinish(null, transactionReportDTO,Boolean.FALSE);
-                }   
-                break;
-            default:
-                if(isSumOperation){
-                    transactionReportDTO.setCurrentLocalDate(currentLocalDate.plusDays(this.daysToAddOrSubstract));
-                    buildStarAndFinish(null, transactionReportDTO,Boolean.TRUE);
-                }else{
-                    transactionReportDTO.setCurrentLocalDate(currentLocalDate.minusDays(this.daysToAddOrSubstract));
-                    buildStarAndFinish(null, transactionReportDTO,Boolean.FALSE);
-                }   
-                break;
+        validateIfRowReportCanFinishWell(transactionReportDTO, isSumOperation);
+        if (!transactionReportDTO.getIsTheEndOfTheReport()) {
+            switch (currentLocalDate.getDayOfWeek()) {
+                case FRIDAY:
+                    transactionReportDTO.setStart(currentLocalDate);
+                    if (transactionReportDTO.getFinish() == null) {
+                        transactionReportDTO.setPreCurrentLocalDate(transactionReportDTO.getCurrentLocalDate());
+                        transactionReportDTO.setCurrentLocalDate(currentLocalDate.plusDays(this.daysToAddOrSubstract));
+                        buildStarAndFinish(null, transactionReportDTO, Boolean.TRUE);
+                    }
+                    break;
+                case THURSDAY:
+                    transactionReportDTO.setFinish(currentLocalDate);
+                    if (transactionReportDTO.getStart() == null) {
+                        transactionReportDTO.setPreCurrentLocalDate(transactionReportDTO.getCurrentLocalDate());
+                        transactionReportDTO.setCurrentLocalDate(currentLocalDate.minusDays(this.daysToAddOrSubstract));
+                        buildStarAndFinish(null, transactionReportDTO, Boolean.FALSE);
+                    }
+                    break;
+                default:
+                    if (isSumOperation) {
+                        transactionReportDTO.setPreCurrentLocalDate(transactionReportDTO.getCurrentLocalDate());
+                        transactionReportDTO.setCurrentLocalDate(currentLocalDate.plusDays(this.daysToAddOrSubstract));
+                        buildStarAndFinish(null, transactionReportDTO, Boolean.TRUE);
+                    } else {
+                        transactionReportDTO.setPreCurrentLocalDate(transactionReportDTO.getCurrentLocalDate());
+                        transactionReportDTO.setCurrentLocalDate(currentLocalDate.minusDays(this.daysToAddOrSubstract));
+                        buildStarAndFinish(null, transactionReportDTO, Boolean.FALSE);
+                    }
+                    break;
+            }
         }
     }
 
@@ -182,13 +206,13 @@ public class TransactionBusinessImpl implements TransactionBusiness {
                 .sorted((TransactionEntity te1, TransactionEntity te2) -> parseTransactionDate(te1.getDate()).compareTo(parseTransactionDate(te2.getDate())))
                 .collect(Collectors.toList());
     }
-    
-    private Date parseTransactionDate(String strDate){
+
+    private Date parseTransactionDate(String strDate) {
         Date parsedDatew = null;
-        try{
+        try {
             parsedDatew = this.dateFormat.parse(strDate);
-        }catch(ParseException e){
-            this.log.error("It was an error at the moment to parse the date",e);
+        } catch (ParseException e) {
+            this.log.error("It was an error at the moment to parse the date", e);
             throw new TransactionException(e);
         }
         return parsedDatew;
