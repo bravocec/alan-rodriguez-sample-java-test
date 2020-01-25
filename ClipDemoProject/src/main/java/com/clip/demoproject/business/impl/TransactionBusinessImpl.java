@@ -12,6 +12,7 @@ import com.clip.demoproject.entities.TransactionEntity;
 import com.clip.demoproject.exceptions.TransactionException;
 import com.clip.demoproject.mapper.TransactionMapper;
 import com.clip.demoproject.repository.TransactionRepository;
+import com.clip.demoproject.util.TransactionValidationsUtil;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DateFormat;
@@ -41,13 +42,11 @@ public class TransactionBusinessImpl implements TransactionBusiness {
 
     private final Long daysToAddOrSubstract = 1L;
 
-    private final String datePattern = "yyyy-MM-dd";
-
     private DateFormat dateFormat;
 
     @PostConstruct
     public void init() {
-        this.dateFormat = new SimpleDateFormat(datePattern);
+        this.dateFormat = new SimpleDateFormat(TransactionValidationsUtil.DATE_PATTERN);
     }
 
     @Autowired
@@ -144,8 +143,8 @@ public class TransactionBusinessImpl implements TransactionBusiness {
         transactionReportDTO.setQuantity(oneElement);
         transactionReportDTO.setTotalamount(totalAmount);
         buildStarAndFinish(transactionEntity.getDate(), transactionReportDTO, Boolean.TRUE);
-        transactionReportDTO.setWeekStart(transactionReportDTO.getStart().format(DateTimeFormatter.ofPattern(this.datePattern.concat(" EEEE"))));
-        transactionReportDTO.setWeekFinish(transactionReportDTO.getFinish().format(DateTimeFormatter.ofPattern(this.datePattern.concat(" EEEE"))));
+        transactionReportDTO.setWeekStart(transactionReportDTO.getStart().format(DateTimeFormatter.ofPattern(TransactionValidationsUtil.DATE_PATTERN.concat(" EEEE"))));
+        transactionReportDTO.setWeekFinish(transactionReportDTO.getFinish().format(DateTimeFormatter.ofPattern(TransactionValidationsUtil.DATE_PATTERN.concat(" EEEE"))));
         return transactionReportDTO;
     }
 
