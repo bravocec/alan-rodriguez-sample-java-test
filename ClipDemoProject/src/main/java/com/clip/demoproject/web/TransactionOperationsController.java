@@ -9,6 +9,7 @@ import com.clip.demoproject.business.TransactionBusiness;
 import com.clip.demoproject.config.Response;
 import com.clip.demoproject.dto.TransactionDTO;
 import com.clip.demoproject.dto.TransactionReportDTO;
+import com.clip.demoproject.facade.TransactionFacade;
 import java.util.List;
 import java.util.Map;
 import org.slf4j.Logger;
@@ -32,47 +33,41 @@ import org.springframework.web.bind.annotation.RestController;
 public class TransactionOperationsController {
 
     @Autowired
-    private TransactionBusiness transactionBusiness;
+    private TransactionFacade transactionFacade;
 
     @PostMapping("/add")
     public ResponseEntity<Response<TransactionDTO>> add(@RequestBody TransactionDTO request) {
-        TransactionDTO responseDTO = this.transactionBusiness.addTransaction(request);
-        Response<TransactionDTO> response = new Response<>(responseDTO);
+        Response<TransactionDTO> response = this.transactionFacade.add(request);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatus()));
     }
 
     @GetMapping("/show")
     public ResponseEntity<Response<TransactionDTO>> show(@RequestParam("user_id") Integer userId, @RequestParam("transaction_id") String transactionId) {
-        TransactionDTO responseDTO = this.transactionBusiness.showTransaction(new TransactionDTO().addUser_id(userId).addTransaction_id(transactionId));
-        Response<TransactionDTO> response = responseDTO == null ? new Response<>(HttpStatus.NOT_FOUND, "Transaction not found") : new Response<>(responseDTO);
+        Response<TransactionDTO> response = this.transactionFacade.show(userId, transactionId);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatus()));
     }
 
     @GetMapping("/list")
     public ResponseEntity<Response<List<TransactionDTO>>> list(@RequestParam("user_id")Integer userId) {
-        List<TransactionDTO> listResponseDTO = this.transactionBusiness.listTransactions(new TransactionDTO().addUser_id(userId));
-        Response<List<TransactionDTO>> response = new Response<>(listResponseDTO);
+        Response<List<TransactionDTO>> response = this.transactionFacade.list(userId);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatus()));
     }
 
     @PostMapping("/sum")
     public ResponseEntity<Response<TransactionDTO>> sum(@RequestParam("user_id")Integer userId) {
-        TransactionDTO responseDTO = this.transactionBusiness.sumTransactions(new TransactionDTO().addUser_id(userId));
-        Response<TransactionDTO> response = new Response<>(responseDTO);
+        Response<TransactionDTO> response = this.transactionFacade.sum(userId);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatus()));
     }
 
     @GetMapping("/report")
     public ResponseEntity<Response<List<TransactionReportDTO>>> report(@RequestParam("user_id")Integer userId) {
-        List<TransactionReportDTO> responseListDTO = this.transactionBusiness.showTransactionReporteService(new TransactionDTO().addUser_id(userId));
-        Response<List<TransactionReportDTO>> response = new Response<>(responseListDTO);
+        Response<List<TransactionReportDTO>> response = this.transactionFacade.report(userId);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatus()));
     }
     
     @GetMapping("/randomTransaction")
     public ResponseEntity<Response<TransactionDTO>> random() {
-        TransactionDTO responseDTO = this.transactionBusiness.getRandomSingleTransaction();
-        Response<TransactionDTO> response = new Response<>(responseDTO);
+        Response<TransactionDTO> response = this.transactionFacade.random();
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatus()));
     }
 

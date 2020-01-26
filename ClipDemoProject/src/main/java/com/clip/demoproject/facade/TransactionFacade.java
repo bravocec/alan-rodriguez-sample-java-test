@@ -23,50 +23,87 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class TransactionFacade {
-    
+
     @Autowired
     private TransactionBusiness transactionBusiness;
-    
+
     @Autowired
     private TransactionValidationBusiness transactionValidationBusiness;
-    
-    public Response<TransactionDTO> add(TransactionDTO request){
+
+    public Response<TransactionDTO> add(TransactionDTO request) {
         Response<TransactionDTO> response = new Response<>();
         TransactionValidationsDTO validations = this.transactionValidationBusiness.validateAddParams(request);
-        if(validations.getIsValidOperation()){
+        if (validations.getIsValidOperation()) {
             response.setResponseBody(this.transactionBusiness.addTransaction(request));
-        }else{
+        } else {
             getErrorMessagesFormated(response, validations);
         }
         return response;
     }
-    
-    
-    public Response<TransactionDTO> show(Integer userId,String transactionId){
-        TransactionDTO transactionDTO = new TransactionDTO().addUser_id(userId).addTransaction_id(transactionId);
-        return null;
+
+    public Response<TransactionDTO> show(Integer userId, String transactionId) {
+        Response<TransactionDTO> response = new Response<>();
+        TransactionDTO transactionRequestDTO = new TransactionDTO().addUser_id(userId).addTransaction_id(transactionId);
+        TransactionValidationsDTO validations = this.transactionValidationBusiness.validateShowParams(transactionRequestDTO);
+        if (!validations.getIsValidOperation()) {
+            getErrorMessagesFormated(response, validations);
+            return response;
+        }
+        TransactionDTO transactionResponseDTO = this.transactionBusiness.showTransaction(transactionRequestDTO);
+        validations = this.transactionValidationBusiness.validateShowIfExist(transactionResponseDTO);
+        if (!validations.getIsValidOperation()) {
+            getErrorMessagesFormated(response, validations);
+        } else {
+            response.setResponseBody(transactionResponseDTO);;
+        }
+        return response;
     }
-    
-    public Response<List<TransactionDTO>> list(Integer userId){
-        return null;
+
+    public Response<List<TransactionDTO>> list(Integer userId) {
+        Response<List<TransactionDTO>> response = new Response<>();
+        TransactionDTO transactionRequestDTO = new TransactionDTO().addUser_id(userId);
+        TransactionValidationsDTO validations = this.transactionValidationBusiness.validateListParams(transactionRequestDTO);
+        if (validations.getIsValidOperation()) {
+            response.setResponseBody(this.transactionBusiness.listTransactions(transactionRequestDTO));
+        } else {
+            getErrorMessagesFormated(response, validations);
+        }
+        return response;
     }
-    
-    public Response<TransactionDTO> sum(Integer userId){
-        return null;
+
+    public Response<TransactionDTO> sum(Integer userId) {
+        Response<TransactionDTO> response = new Response<>();
+        TransactionDTO transactionRequestDTO = new TransactionDTO().addUser_id(userId);
+        TransactionValidationsDTO validations = this.transactionValidationBusiness.validateSumParams(transactionRequestDTO);
+        if (validations.getIsValidOperation()) {
+            response.setResponseBody(this.transactionBusiness.sumTransactions(transactionRequestDTO));
+        } else {
+            getErrorMessagesFormated(response, validations);
+        }
+        return response;
     }
-    
-    public Response<List<TransactionReportDTO>> report(Integer userId){
-        return null;
+
+    public Response<List<TransactionReportDTO>> report(Integer userId) {
+        Response<List<TransactionReportDTO>> response = new Response<>();
+        TransactionDTO transactionRequestDTO = new TransactionDTO().addUser_id(userId);
+        TransactionValidationsDTO validations = this.transactionValidationBusiness.validateReportParams(transactionRequestDTO);
+        if (validations.getIsValidOperation()) {
+            response.setResponseBody(this.transactionBusiness.showTransactionReporteService(transactionRequestDTO));
+        } else {
+            getErrorMessagesFormated(response, validations);
+        }
+        return response;
     }
-    
-    
-    public Response<TransactionDTO> random(){
-        return null;
+
+    public Response<TransactionDTO> random() {
+        Response<TransactionDTO> response = new Response<>();
+        response.setResponseBody(this.transactionBusiness.getRandomSingleTransaction());
+        return response;
     }
-    
-    private void getErrorMessagesFormated(Response<TransactionDTO> response,TransactionValidationsDTO validations){
+
+    private void getErrorMessagesFormated(Response response, TransactionValidationsDTO validations) {
         response.setMessage(validations.getErrorMessages().stream().collect(Collectors.joining("\n")));
         response.setStatus(HttpStatus.NOT_ACCEPTABLE);
     }
-    
+
 }

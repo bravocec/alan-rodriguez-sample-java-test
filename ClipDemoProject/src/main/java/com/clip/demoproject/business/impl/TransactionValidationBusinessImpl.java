@@ -21,12 +21,14 @@ import org.springframework.stereotype.Service;
 @Service
 public class TransactionValidationBusinessImpl implements TransactionValidationBusiness {
 
+    final Integer ceroInteger = 0;
+    final Double ceroDouble = 0.0;
+
+    @Override
     public TransactionValidationsDTO validateAddParams(TransactionDTO request) {
-        
+
         final TransactionValidationsDTO validations = new TransactionValidationsDTO();
-        final Integer ceroInteger = 0;
-        final Double ceroDouble = 0.0;
-        
+
         if (request == null) {
             validations.getErrorMessages().add("The request cannot be null");
         }
@@ -52,10 +54,70 @@ public class TransactionValidationBusinessImpl implements TransactionValidationB
         }
         return validations;
     }
-    
-    public TransactionValidationsDTO validateShowParams(TransactionDTO request){
+
+    @Override
+    public TransactionValidationsDTO validateShowParams(TransactionDTO request) {
         final TransactionValidationsDTO validations = new TransactionValidationsDTO();
+        if (request == null) {
+            validations.getErrorMessages().add("The request cannot be null");
+        }
+        if (request.getUser_id() == null || request.getUser_id() <= ceroInteger) {
+            validations.getErrorMessages().add("The user_id cannot be null, negative or 0");
+        }
+
+        if (request.getTransaction_id() == null || request.getTransaction_id().trim().isEmpty()) {
+            validations.getErrorMessages().add("The transaction_id cannot be null");
+        }
+
+        if (!validations.getErrorMessages().isEmpty()) {
+            validations.setIsValidOperation(Boolean.FALSE);
+        }
         return validations;
+    }
+
+    @Override
+    public TransactionValidationsDTO validateShowIfExist(TransactionDTO request) {
+        final TransactionValidationsDTO validations = new TransactionValidationsDTO();
+        if (request == null) {
+            validations.getErrorMessages().add("Transaction not found");
+        }
+        if (!validations.getErrorMessages().isEmpty()) {
+            validations.setIsValidOperation(Boolean.FALSE);
+        }
+        return validations;
+    }
+
+    @Override
+    public TransactionValidationsDTO validateListParams(TransactionDTO request) {
+        final TransactionValidationsDTO validations = new TransactionValidationsDTO();
+        commonValidationsForUserId(validations, request);
+        return validations;
+    }
+
+    @Override
+    public TransactionValidationsDTO validateSumParams(TransactionDTO request) {
+        final TransactionValidationsDTO validations = new TransactionValidationsDTO();
+        commonValidationsForUserId(validations, request);
+        return validations;
+    }
+
+    @Override
+    public TransactionValidationsDTO validateReportParams(TransactionDTO request) {
+        final TransactionValidationsDTO validations = new TransactionValidationsDTO();
+        commonValidationsForUserId(validations, request);
+        return validations;
+    }
+
+    private void commonValidationsForUserId(TransactionValidationsDTO validations, TransactionDTO request) {
+        if (request == null) {
+            validations.getErrorMessages().add("The request cannot be null");
+        }
+        if (request.getUser_id() == null || request.getUser_id() <= ceroInteger) {
+            validations.getErrorMessages().add("The user_id cannot be null, negative or 0");
+        }
+        if (!validations.getErrorMessages().isEmpty()) {
+            validations.setIsValidOperation(Boolean.FALSE);
+        }
     }
 
 }

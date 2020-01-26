@@ -65,16 +65,16 @@ public class TransactionBusinessImpl implements TransactionBusiness {
     @Override
     public TransactionDTO showTransaction(TransactionDTO param) {
         TransactionEntity transaction = this.transactionRepository.findById(param.getTransaction_id()).orElse(null);
-        TransactionDTO response = null;
+        TransactionDTO transactionDTO = null;
         if (transaction != null) {
             this.log.info("Transaction found it with the id {}", param.getTransaction_id());
             if (transaction.getUserId().equals(param.getUser_id())) {
-                response = TransactionMapper.transactionDTOToEntity(transaction);
+                transactionDTO = TransactionMapper.transactionDTOToEntity(transaction);
             } else {
                 this.log.warn("The transaction {} exist but it not belongs to the user {}, the user id for the specific transaction is {}", transaction.getId(), param.getUser_id(), transaction.getUserId());
             }
         }
-        return response;
+        return transactionDTO;
     }
 
     @Override
