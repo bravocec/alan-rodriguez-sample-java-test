@@ -1,4 +1,4 @@
-# Project Title
+# Simple Java Test project for Clip
 
 Alan Rodrigeuz Simple Java Test project for Clip.
 
