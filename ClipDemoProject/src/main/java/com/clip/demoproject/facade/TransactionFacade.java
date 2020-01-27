@@ -102,7 +102,7 @@ public class TransactionFacade {
     }
 
     private void getErrorMessagesFormated(Response response, TransactionValidationsDTO validations) {
-        response.setMessage(validations.getErrorMessages().stream().collect(Collectors.joining("\n")));
+        response.setMessage(validations.getErrorMessages().stream().collect(Collectors.joining("; ")));
         response.setStatus(HttpStatus.NOT_ACCEPTABLE);
     }
 

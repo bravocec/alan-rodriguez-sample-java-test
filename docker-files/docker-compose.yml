@@ -1,4 +1,4 @@
-version: '3.7'
+version: '3.2'
 services: 
     mongodb:
         image: mongo:4.2.2
@@ -10,4 +10,4 @@ services:
         volumes:
             - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
         ports:
-            - '27017-27019:27017-27019'
+            - '27017:27017'

@@ -36,7 +36,7 @@ public class TransactionValidationBusinessImpl implements TransactionValidationB
         if (request.getAmount() == null || request.getAmount().compareTo(ceroDouble) <= ceroInteger) {
             validations.getErrorMessages().add("The amount cannot be null, negative or 0");
         }
-        System.out.println("Locale.getDefault() " + Locale.getDefault());
+        
         if (request.getDate() == null || !TransactionValidationsUtil.isValidFormat(TransactionValidationsUtil.DATE_PATTERN, request.getDate(), Locale.getDefault())) {
             validations.getErrorMessages().add("The transaction date cannot be null or does not have a valid format (" + TransactionValidationsUtil.DATE_PATTERN + ")");
         }
@@ -52,6 +52,7 @@ public class TransactionValidationBusinessImpl implements TransactionValidationB
         if (!validations.getErrorMessages().isEmpty()) {
             validations.setIsValidOperation(Boolean.FALSE);
         }
+        request.setTransaction_id(null);
         return validations;
     }
 

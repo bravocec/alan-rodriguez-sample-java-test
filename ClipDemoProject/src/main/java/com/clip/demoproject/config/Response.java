@@ -9,6 +9,7 @@ public class Response<T> extends AbstractResponse<T> {
     private String message;
 
     public Response() {
+        super(HttpStatus.OK);
     }
 
     public Response(T responseBody) {

@@ -27,7 +27,6 @@ public class TransactionValidationsUtil {
             String result = ld.format(fomatter);
             return result.equals(value);
         } catch (DateTimeParseException dateTimeParseException) {
-
         }
 
         return false;

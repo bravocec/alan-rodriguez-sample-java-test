@@ -12,6 +12,10 @@ public class AbstractResponse<T> implements Serializable {
 
     public AbstractResponse() {
     }
+    
+    public AbstractResponse(HttpStatus status) {
+        this.status = status;
+    }
 
     public AbstractResponse(HttpStatus status, T responseBody) {
         this.status = status;

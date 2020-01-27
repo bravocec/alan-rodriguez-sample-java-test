@@ -55,9 +55,6 @@ public class TransactionBusinessImpl implements TransactionBusiness {
     @Override
     public TransactionDTO addTransaction(TransactionDTO param) {
         TransactionEntity transactionEntity = TransactionMapper.transactionEntityToDTO(param);
-        if (transactionEntity.getDate() == null) {
-            transactionEntity.setDate(this.dateFormat.format(new Date()));
-        }
         transactionEntity = this.transactionRepository.save(transactionEntity);
         return TransactionMapper.transactionDTOToEntity(transactionEntity);
     }
@@ -79,7 +76,7 @@ public class TransactionBusinessImpl implements TransactionBusiness {
 
     @Override
     public List<TransactionDTO> listTransactions(TransactionDTO param) {
-        List<TransactionEntity> allTransactions = this.transactionRepository.findAll();
+        List<TransactionEntity> allTransactions = this.transactionRepository.findByUserId(param.getUser_id());
         return allTransactions
                 .stream()
                 .map(transaction -> TransactionMapper.transactionDTOToEntity(transaction))

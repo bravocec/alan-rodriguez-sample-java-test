@@ -16,7 +16,7 @@ import java.util.Objects;
  */
 public class TransactionValidationsDTO implements Serializable{
     
-    private Boolean isValidOperation = Boolean.FALSE;
+    private Boolean isValidOperation = Boolean.TRUE;
     private List<String> errorMessages = new ArrayList<>();
 
     public Boolean getIsValidOperation() {
