@@ -5,6 +5,7 @@
  */
 package com.clip.demoproject.business;
 
+import com.clip.demoproject.dto.SumDTO;
 import com.clip.demoproject.dto.TransactionDTO;
 import com.clip.demoproject.dto.TransactionReportDTO;
 import java.util.List;
@@ -21,7 +22,7 @@ public interface TransactionBusiness {
     
     List<TransactionDTO> listTransactions(TransactionDTO param);
     
-    TransactionDTO sumTransactions(TransactionDTO param);
+    SumDTO sumTransactions(TransactionDTO param);
     
     List<TransactionReportDTO> showTransactionReporteService(TransactionDTO param);
     

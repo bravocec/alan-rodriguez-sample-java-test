@@ -6,6 +6,7 @@
 package com.clip.demoproject.business.impl;
 
 import com.clip.demoproject.business.TransactionBusiness;
+import com.clip.demoproject.dto.SumDTO;
 import com.clip.demoproject.dto.TransactionDTO;
 import com.clip.demoproject.dto.TransactionReportDTO;
 import com.clip.demoproject.entities.TransactionEntity;
@@ -84,12 +85,12 @@ public class TransactionBusinessImpl implements TransactionBusiness {
     }
 
     @Override
-    public TransactionDTO sumTransactions(TransactionDTO param) {
+    public SumDTO sumTransactions(TransactionDTO param) {
         List<TransactionEntity> allTransactions = this.transactionRepository.findByUserId(param.getUser_id());
         Double sum = 0.0;
         sum = allTransactions.stream().map(transaction -> transaction.getAmount()).reduce(sum, Double::sum);
         sum = new BigDecimal(sum).setScale(2, RoundingMode.HALF_EVEN).doubleValue();
-        return new TransactionDTO().addUser_id(param.getUser_id()).addAmount(sum);
+        return new SumDTO().addUser_id(param.getUser_id()).addSum(sum);
     }
 
     @Override

@@ -8,6 +8,7 @@ package com.clip.demoproject.business;
 import com.clip.demoproject.business.impl.TransactionBusinessImpl;
 import com.clip.demoproject.business.impl.TransactionValidationBusinessImpl;
 import com.clip.demoproject.config.Response;
+import com.clip.demoproject.dto.SumDTO;
 import com.clip.demoproject.dto.TransactionDTO;
 import com.clip.demoproject.dto.TransactionReportDTO;
 import com.clip.demoproject.facade.TransactionFacade;
@@ -106,8 +107,8 @@ public class TestTransactionFacade {
         TransactionDTO current = getGenericTransaction().addAmount(500.00).addUser_id(customUserId);
         this.transactionFacade.add(current);
         this.transactionFacade.add(current);
-        Response<TransactionDTO> sumResponseDTO = this.transactionFacade.sum(customUserId);
-        assertEquals(expectdAmount, sumResponseDTO.getResponseBody().getAmount());
+        Response<SumDTO> sumResponseDTO = this.transactionFacade.sum(customUserId);
+        assertEquals(expectdAmount, sumResponseDTO.getResponseBody().getSum());
     }
     
     @Test

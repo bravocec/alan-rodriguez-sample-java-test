@@ -8,6 +8,7 @@ package com.clip.demoproject.facade;
 import com.clip.demoproject.business.TransactionBusiness;
 import com.clip.demoproject.business.TransactionValidationBusiness;
 import com.clip.demoproject.config.Response;
+import com.clip.demoproject.dto.SumDTO;
 import com.clip.demoproject.dto.TransactionDTO;
 import com.clip.demoproject.dto.TransactionReportDTO;
 import com.clip.demoproject.dto.TransactionValidationsDTO;
@@ -71,8 +72,8 @@ public class TransactionFacade {
         return response;
     }
 
-    public Response<TransactionDTO> sum(Integer userId) {
-        Response<TransactionDTO> response = new Response<>();
+    public Response<SumDTO> sum(Integer userId) {
+        Response<SumDTO> response = new Response<>();
         TransactionDTO transactionRequestDTO = new TransactionDTO().addUser_id(userId);
         TransactionValidationsDTO validations = this.transactionValidationBusiness.validateSumParams(transactionRequestDTO);
         if (validations.getIsValidOperation()) {

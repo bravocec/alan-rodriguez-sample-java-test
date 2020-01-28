@@ -5,15 +5,12 @@
  */
 package com.clip.demoproject.web;
 
-import com.clip.demoproject.business.TransactionBusiness;
 import com.clip.demoproject.config.Response;
+import com.clip.demoproject.dto.SumDTO;
 import com.clip.demoproject.dto.TransactionDTO;
 import com.clip.demoproject.dto.TransactionReportDTO;
 import com.clip.demoproject.facade.TransactionFacade;
 import java.util.List;
-import java.util.Map;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -54,8 +51,8 @@ public class TransactionOperationsController {
     }
 
     @PostMapping("/sum")
-    public ResponseEntity<Response<TransactionDTO>> sum(@RequestParam("user_id")Integer userId) {
-        Response<TransactionDTO> response = this.transactionFacade.sum(userId);
+    public ResponseEntity<Response<SumDTO>> sum(@RequestParam("user_id")Integer userId) {
+        Response<SumDTO> response = this.transactionFacade.sum(userId);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatus()));
     }
 
