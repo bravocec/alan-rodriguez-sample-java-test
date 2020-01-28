@@ -1,6 +1,6 @@
 # Simple Java Test project for Clip
 
-Alan Rodrigeuz Simple Java Test project for Clip.
+Alan Rodriguez Simple Java Test project for Clip.
 
 ## Getting Started
 
@@ -10,97 +10,175 @@ These project was build it with Spring Boot and MongoDB. You can compile/run thi
 
 These prerequisites are mandatory, regardless of which configuration of the project will be executed.
 
-```
-Internet connection
-```
-To download the project.
-```
-git version control
-```
-The port 8081 needs to open on the server that the project will be deployed. To see if this port is open, you can execute this command on yor terminal. If yo have any problems, you can take a look [to this](https://www.2daygeek.com/how-to-check-whether-a-port-is-open-on-the-remote-linux-system-server/)
+- Internet connection
+- git version control software
+
+The port 8081 needs to open on the server that the project will be deployed. To see if this port is open, you can run this command on yor terminal. If yo have any problems, you can take a look [to this](https://www.2daygeek.com/how-to-check-whether-a-port-is-open-on-the-remote-linux-system-server/)
 ```
 nc -zvw3 <Server IP> 8081
 ```
-Also you need the JDK 8 running on the server. To see if you have JDK 8 installed, run the follow command.
+Also you need the JDK 8 running on the server. To see if you have JDK 8 installed, run the following command
 ```
 java -version
 ```
+You will see something like this:
+![Java Version](https://4.bp.blogspot.com/-NEe5SaGoB0Y/WN_XWW_HxQI/AAAAAAAABVM/2l6qyAFkQrgeBPh90fXvHXF_rixAeMtCgCLcB/s1600/Screenshot%2Bfrom%2B2017-04-01%2B10-36-53.png)
 
-#### Prerequisites
+If you don't have JDK 8 installed, you can download from [here](https://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)
+#### Prerequisites for local build and execuion
 
-```
-Give examples
-```
+If you want to build the project and run it on local instance with mongoDB, you will need these requisites:
 
-### Installing
+-maven 3.5.0: [Here you can download the binaries](https://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)
+-docker 1.13.0+ [Here you can found the instructions](https://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)
+-docker-compose 1.25 (Compose file format 3.2) [Here you can found the instructions and the repository](https://github.com/docker/compose/releases)
 
-A step by step series of examples that tell you how to get a development env running
+### Downloading the repository
 
-Say what the step will be
-
-```
-Give the example
-```
-
-And repeat
+Download the project fom github repository: 
 
 ```
-until finished
+git clone  https://github.com/bravocec/alan-rodriguez-sample-java-test.git
 ```
 
-End with an example of getting some data out of the system or using it for a little demo
-
-## Running the tests
-
-Explain how to run the automated tests for this system
-
-### Break down into end to end tests
-
-Explain what these tests test and why
+And go to the project folder.
 
 ```
-Give an example
+cd alan-rodriguez-sample-java-test/
 ```
 
-### And coding style tests
+### Compiling and running [Local environment]
 
-Explain what these tests test and why
+Once you have download the project, go to the project folder and run the following command
 
 ```
-Give an example
+mvn clean package -Plocal
 ```
 
-## Deployment
+The project will start  to compile and run the unit test. Once the project has finished building, you need to start the docker container for the MongoDB before you run the project
 
-Add additional notes about how to deploy this on a live system
+So then, go to the folder "docker-files"
 
-## Built With
+```
+cd docker-files/
+```
 
-* [Dropwizard](http://www.dropwizard.io/1.0.2/docs/) - The web framework used
-* [Maven](https://maven.apache.org/) - Dependency Management
-* [ROME](https://rometools.github.io/rome/) - Used to generate RSS Feeds
+And then run the following command
 
-## Contributing
+```
+docker-compose up --build -d
+```
 
-Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c63ec426) for details on our code of conduct, and the process for submitting pull requests to us.
+Once the MongoDB docker container has finished deploying, you finllay will be able to run the application. Run the following command to start the application in a backend process
 
-## Versioning
+```
+cd ..
+nohup java -Xms256m -Xmx256m -jar ClipDemoProject/target/ClipDemoProject-1.0-SNAPSHOT &
+```
 
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/your/project/tags). 
+### Compiling and running [MongoDB Cloud Cluster]
 
-## Authors
+If you no have docker on the server/machine where you are building and runing the ClipDemoProject,  you can also compile a version that will use a MongoDB Cluster that is runing on the Cloud
 
-* **Billie Thompson** - *Initial work* - [PurpleBooth](https://github.com/PurpleBooth)
+Execute the following command to build the cloud version of the project
 
-See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
+```
+mvn clean package -Pcloud
+```
 
-## License
+And then execute the folliwng command to start the application
 
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
+```
+nohup java -Xms256m -Xmx256m -jar ClipDemoProject/target/ClipDemoProject-1.0-SNAPSHOT.jar &
+```
 
-## Acknowledgments
+### Only run the binaries.
 
-* Hat tip to anyone whose code was used
-* Inspiration
-* etc
+If you only want to run the pre-compiled binaries, run the following commands
 
+#### Run local version.
+
+Note: To run this binary,  make sure the MongoDB docker container is running.
+
+Run the following command
+
+```
+nohup java -Xms256m -Xmx256m -jar binaries/ClipDemoProject-1.0-SNAPSHOT-Local.jar &
+```
+
+#### Run cloud version.
+
+Run the following command
+
+```
+nohup java -Xms256m -Xmx256m -jar binaries/ClipDemoProject-1.0-SNAPSHOT-Cloud.jar &
+```
+
+## Test the application
+
+The project has enable Swagger, so you can test the application only with your browser,  or if you want, you can also test the application with software like [Postman](https://www.getpostman.com/downloads/) or [SoapUI](https://www.soapui.org/)
+
+### Swagger UI
+
+Open your browser and enter de following URL
+
+```
+http://<IP Server>:8081/clip-demo-project/swagger-ui.html
+```
+
+You will see something like this.
+
+![Swagger](https://drive.google.com/open?id=1Op7pMcCF-LsdXY0Qnvch4mO8eOjGVCbU)
+
+Then click on the "transaction-operations-controller"
+
+![TransctionOperations](https://drive.google.com/open?id=1R6CrqcCpXlwJ4gFe2VYPRtbexZn9857E)
+
+Click on any transaction operation and test it
+
+![TransactionList](https://drive.google.com/open?id=1YsG_ZFX5rYnVG19jfZr6dcUlu9Zl43hP)
+
+### Test the application with other software
+
+If you will use Postman or SoapUI, here are the contracts.
+
+- /transactions/add [POST]
+
+```
+{
+  "amount": <double>,
+  "date": "string",
+  "description": "string",
+  "user_id": <int>
+}
+```
+
+- /transactions/list [GET]
+
+```
+?user_id=<int>
+```
+
+- /transactions/randomTransaction [GET]
+
+```
+no params
+```
+
+- /transactions/report [GET]
+
+```
+?user_id=<int>
+```
+
+- /transactions/show [GET]
+
+```
+?user_id=<int>&transaction_id=<int>
+```
+
+- /transactions/sum [POST]
+
+```
+?user_id=<int>
+```
