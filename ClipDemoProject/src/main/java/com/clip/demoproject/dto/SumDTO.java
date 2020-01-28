@@ -9,7 +9,7 @@ import java.io.Serializable;
 
 /**
  *
- * @author roal7004
+ * @author Alan Rodriguez
  */
 public class SumDTO implements Serializable {
 
