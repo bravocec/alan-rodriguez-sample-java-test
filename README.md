@@ -13,7 +13,7 @@ These prerequisites are mandatory, regardless of which configuration of the proj
 - Internet connection
 - git version control software
 
-The port 8081 needs to open on the server that the project will be deployed. To see if this port is open, you can run this command on yor terminal. If yo have any problems, you can take a look [to this](https://www.2daygeek.com/how-to-check-whether-a-port-is-open-on-the-remote-linux-system-server/)
+The port 8081 needs to open on the server that the project will be deployed. To see if this port is open, you can run this command in your terminal. If you have any problems, you can take a look [to this](https://www.2daygeek.com/how-to-check-whether-a-port-is-open-on-the-remote-linux-system-server/)
 ```
 nc -zvw3 <Server IP> 8081
 ```
