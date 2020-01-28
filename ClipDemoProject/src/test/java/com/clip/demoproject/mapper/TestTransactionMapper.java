@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 /**
  *
- * @author roal7004
+ * @author Alan rodriguez
  */
 public class TestTransactionMapper {
 
